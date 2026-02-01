@@ -8,7 +8,7 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
-@app.route('/', methods=['GET', '[POST]'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     conn = get_db_connection()
 
@@ -18,13 +18,13 @@ def index():
 
 
         conn.execute(
-            'INSER INTO users (name, email) VALUES (?, ?)',
+            'INSERT INTO users (name, email) VALUES (?, ?)',
             (name, email)
         )
         conn.commit()
         return redirect('/')
     
-    users = conn.execute('index.html', users=users)
+    users = conn.execute('SELECT * FROM users').fetchall()
     conn.close()
     return render_template('index.html', users=users)
 
