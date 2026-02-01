@@ -1,0 +1,30 @@
+body{
+    font-family: Arial;
+    background: #f4f6f8;
+    padding: 40px;
+}
+
+h2{
+    color: #1e293b;
+
+}
+
+form input, button{
+    padding: 8px;
+    margin:  5px;
+}
+
+table{
+    width: 60%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ccc;
+}
+
+th {
+    background: #1e40af;
+    color: white;
+}
