@@ -15,11 +15,12 @@ def index():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
+        phone = request.form['phone']
 
 
         conn.execute(
-            'INSERT INTO users (name, email) VALUES (?, ?)',
-            (name, email)
+            'INSERT INTO users (name, email, phone) VALUES (?, ?, ?)',
+            (name, email, phone)
         )
         conn.commit()
         return redirect('/')

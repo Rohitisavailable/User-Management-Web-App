@@ -16,6 +16,9 @@
         <div class="mb-3">
             <input type="email" name="email" class="form-control" placeholder="Enter Email" required>
         </div>
+        <div class="mb-3">
+            <input type="number" name="phone" id="form-control" placeholder="Enter Phone" required>
+        </div>
         <button class="btn btn-primary w-100">Add User</button>
     </form>
 
@@ -27,6 +30,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Phone</th>
             </tr>
         </thead>
         <tbody>
@@ -35,6 +39,7 @@
                 <td>{{ user['id'] }}</td>
                 <td>{{ user['name'] }}</td>
                 <td>{{ user['email'] }}</td>
+                <td>{{ user['phone'] }}</td>
             </tr>
             {% endfor %}
         </tbody>
