@@ -1,10 +1,10 @@
 # User-Management-Web-App
 
-A simple web application for managing users built with Flask and SQLite.
+A web application for user authentication and management built with Flask, SQLite, and Bootstrap 5.
 
 ## Description
 
-This is a User Management System that allows you to add and view users. The application provides a clean, simple interface for managing user information including names and email addresses.
+This is a User Management System that provides user registration, login, and a protected dashboard. The application uses session-based authentication with secure password hashing to manage user access.
 
 ## Tech Stack
 
@@ -13,38 +13,47 @@ This is a User Management System that allows you to add and view users. The appl
 | **Python** | Backend programming language |
 | **Flask** | Web framework for building the application |
 | **SQLite** | Lightweight database for storing user data |
+| **Werkzeug** | Password hashing and security utilities |
 | **Jinja2** | Template engine for rendering HTML pages |
+| **Bootstrap 5** | Frontend UI framework for responsive design |
 | **HTML5** | Frontend markup structure |
-| **CSS3** | Styling and layout |
+| **CSS3** | Custom styling and layout |
 
 ## Project Structure
 
 ```
 User-Management-Web-App/
 ├── README.md
-└── User-Manage/
-    ├── app.py              # Main Flask application
-    ├── database.db         # SQLite database file
-    ├── static/
-    │   └── style.css       # CSS styles
-    └── templates/
-        └── index.html      # HTML template
+├── app.py                  # Main Flask application
+├── database.db             # SQLite database file
+├── requirements.txt        # Python dependencies
+├── static/
+│   └── style.css           # Custom CSS styles
+└── templates/
+    ├── home.html           # Landing page with login/register links
+    ├── register.html       # User registration form
+    ├── login.html          # User login form
+    └── dashboard.html      # Protected dashboard page
 ```
 
 ## Project Flow
 
-1. **User Access** → User navigates to the homepage (`/`)
-2. **View Users** → Application fetches all users from SQLite database and displays them in a table
-3. **Add User** → User fills in the form with name and email
-4. **Form Submission** → Data is sent via POST request to the server
-5. **Database Insert** → Flask backend inserts the new user into the SQLite database
-6. **Redirect** → User is redirected back to the homepage to see the updated user list
+1. **Home Page** → User navigates to the homepage (`/`) and sees options to Login or Register
+2. **Register** → New user fills in username and password at `/register`
+3. **Account Creation** → Password is securely hashed and stored in the SQLite database
+4. **Login** → User logs in at `/login` with their credentials
+5. **Authentication** → Flask backend verifies credentials against the hashed password
+6. **Dashboard** → Authenticated user is redirected to the protected dashboard (`/dashboard`)
+7. **Logout** → User can log out (`/logout`), which clears the session and redirects to home
 
 ## Features
 
-- ✅ Add new users with name and email
-- ✅ View all registered users in a table
-- ✅ Clean and responsive UI
+- ✅ User registration with username and password
+- ✅ Secure password hashing using Werkzeug
+- ✅ Session-based user authentication
+- ✅ Protected dashboard accessible only to logged-in users
+- ✅ Logout functionality with session clearing
+- ✅ Responsive UI with Bootstrap 5
 - ✅ SQLite database for persistent storage
 
 ## How to Run
@@ -52,12 +61,12 @@ User-Management-Web-App/
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Rohitisavailable/User-Management-Web-App.git
-   cd User-Management-Web-App/User-Manage
+   cd User-Management-Web-App
    ```
 
 2. **Install dependencies**
    ```bash
-   pip install flask
+   pip install -r requirements.txt
    ```
 
 3. **Run the application**
