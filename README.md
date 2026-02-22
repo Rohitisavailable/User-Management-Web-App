@@ -13,16 +13,6 @@ This is a User Management System that allows you to add and view users. The appl
 | **Python** | Backend programming language |
 | **Flask** | Web framework for building the application |
 | **SQLite** | Lightweight database for storing user data |
-```
-graph TD
-   A[User Access] -->|Navigate to homepage| B[View Users]
-   B -->|Fetch from database| C[Display User Table]
-   D[Add User Form] -->|Fill name & email| E[Form Submission]
-   E -->|POST request| F[Backend Processing]
-   F -->|Insert into database| G[Database Update]
-   G -->|Redirect| B
-   C --> D
-```
 | **Jinja2** | Template engine for rendering HTML pages |
 | **HTML5** | Frontend markup structure |
 | **CSS3** | Styling and layout |
