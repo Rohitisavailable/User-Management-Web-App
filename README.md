@@ -46,8 +46,9 @@ User-Management-Web-App/
 6. **Dashboard** → Authenticated user is redirected to the protected dashboard (`/dashboard`)
 7. **Logout** → User can log out (`/logout`), which clears the session and redirects to home
 
-## User Authentication Flow
+## Authentication Flow
 
+```mermaid
 flowchart TD
 
 A[Start Application] --> B{User Action}
@@ -55,26 +56,20 @@ A[Start Application] --> B{User Action}
 B -->|Register| C[Open Register Page]
 C --> D[Enter Username & Password]
 D --> E[Hash Password]
-E --> F[Save User in SQLite Database]
-F --> G[Redirect to Login]
+E --> F[Save User in Database]
+F --> G[Redirect Login]
 
-B -->|Login| H[Open Login Page]
+B -->|Login| H[Login Page]
 H --> I[Enter Credentials]
-I --> J[Fetch User From Database]
+I --> J[Check Database]
 
-J --> K{Password Match?}
-
-K -->|No| H
+J --> K{Password Correct?}
 
 K -->|Yes| L[Create Session]
-L --> M[Redirect Dashboard]
+L --> M[Dashboard]
 
-M --> N{User Click Logout?}
-
-N -->|Yes| O[Destroy Session]
-O --> H
-
-N -->|No| M
+K -->|No| H
+```
 
 ## Features
 
