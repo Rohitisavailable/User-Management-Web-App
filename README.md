@@ -39,6 +39,62 @@ User-Management-Web-App/
 4. **Form Submission** → Data is sent via POST request to the server
 5. **Database Insert** → Flask backend inserts the new user into the SQLite database
 6. **Redirect** → User is redirected back to the homepage to see the updated user list
+## Flowchart
+
+```
+┌─────────────────────┐
+│   User Accesses     │
+│   Homepage (/)      │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Fetch Users from   │
+│  SQLite Database    │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Display Users in   │
+│  Table Format       │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  User Fills Form    │
+│ (Name & Email)      │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Submit Form via    │
+│  POST Request       │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Flask Backend      │
+│  Validates Data     │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Insert User into   │
+│  SQLite Database    │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Redirect to        │
+│  Homepage           │
+└──────────┬──────────┘
+         │
+         ▼
+┌─────────────────────┐
+│  Updated User List  │
+│  Displayed          │
+└─────────────────────┘
+```
 
 ## Features
 
