@@ -50,6 +50,28 @@ def login():
     return render_template('login.html')
 
 
+@app.route('/add-employee', methods=['GET', 'POST'])
+def add_employee():
+    if 'user' not in session:
+        return redirect('/login')
+    
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        dept = request.form['dept']
+
+        db = get_db()
+        db.execute(
+            "INSERT INTO employee (name, email, dept) VALUES (?, ?)"
+            (name, email, dept)
+        )
+        db.commit()
+        return redirect('/employee')
+    return render_template('/add_employee.html')
+
+
+
+
 @app.route('/dashboard')
 def dashboard():
     if 'user' not in session:
