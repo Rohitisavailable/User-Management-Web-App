@@ -31,6 +31,32 @@ def register():
     return render_template('register.html')
 
 
+@app.route('/edit<int:id>', methods=['GET', 'POST'])
+def edit_employee():
+    if 'user' not in session:
+        return redirect('/login')
+    
+    db = get_db()
+    employee = db.execute(
+        "SELECT * FROM employee WHERE id = ?", (id,)
+    ).fetchone()
+
+    if request.method == 'POST':
+        db.execute(
+            "UPDATE employee SET name=?, email=?, dept=? WHERE id=?",
+            (
+                request.form['name'],
+                request.form['email'],
+                request.form['dept'],
+                id
+            )
+        )
+        db.commit()
+        return redirect('/employee')
+    return render_template('edit_employee.html', employee=employee)
+
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
