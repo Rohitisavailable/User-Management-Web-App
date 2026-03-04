@@ -70,6 +70,14 @@ def add_employee():
     return render_template('/add_employee.html')
 
 
+@app.route('/employee')
+def employee():
+    if 'user' not in session:
+        return redirect('/login')
+    
+    db = get_db()
+    data = db.execute("SELECT * FROM employee").fetchall()
+    return render_template('/employee.html', employee = data)
 
 
 @app.route('/dashboard')
