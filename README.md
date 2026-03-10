@@ -1,10 +1,10 @@
 # User-Management-Web-App
 
-A web application for user authentication and management built with Flask, SQLite, and Bootstrap 5.
+A secure web application for managing employees built with Flask and SQLite.
 
 ## Description
 
-This is a User Management System that allows you to add and view users. The application provides a clean, simple interface for managing user information including names and email addresses.
+This is an Employee Management System with user authentication that allows you to register an account, log in securely, and manage employee information. The application provides a secure interface with password hashing for managing employee data including names, email addresses, and departments.
 
 ## Tech Stack
 
@@ -12,41 +12,57 @@ This is a User Management System that allows you to add and view users. The appl
 |------------|---------|
 | **Python** | Backend programming language |
 | **Flask** | Web framework for building the application |
-| **SQLite** | Lightweight database for storing user data |
+| **Werkzeug** | Security utilities for password hashing and verification |
+| **SQLite** | Lightweight database for storing user and employee data |
 | **Jinja2** | Template engine for rendering HTML pages |
 | **HTML5** | Frontend markup structure |
-| **CSS3** | Custom styling and layout |
+| **CSS3** | Styling and layout |
 
 ## Project Structure
 
 ```
 User-Management-Web-App/
 ├── README.md
-└── User-Manage/
-    ├── app.py              # Main Flask application
-    ├── database.db         # SQLite database file
-    ├── static/
-    │   └── style.css       # CSS styles
-    └── templates/
-        └── index.html      # HTML template
+├── app.py                  # Main Flask application
+├── database.db             # SQLite database file
+├── requirements.txt        # Python dependencies
+├── static/
+│   └── style.css           # CSS styles
+└── templates/
+    ├── home.html           # Homepage
+    ├── register.html       # User registration page
+    ├── login.html          # User login page
+    ├── employee.html       # Employee list page
+    ├── add_employee.html   # Add employee form
+    ├── edit_employee.html  # Edit employee form
+    └── dashboard.html      # Dashboard (optional)
 ```
 
 ## Project Flow
 
 1. **User Access** → User navigates to the homepage (`/`)
-2. **View Users** → Application fetches all users from SQLite database and displays them in a table
-3. **Add User** → User fills in the form with name and email
-4. **Form Submission** → Data is sent via POST request to the server
-5. **Database Insert** → Flask backend inserts the new user into the SQLite database
-6. **Redirect** → User is redirected back to the homepage to see the updated user list
+2. **User Registration** → New users can register an account at `/register`
+3. **Password Hashing** → Passwords are securely hashed using PBKDF2:SHA256
+4. **User Login** → Registered users log in at `/login` with credentials verification
+5. **Session Management** → Authenticated users are granted a session
+6. **Employee Management** → Users can add, view, edit, and delete employees at `/employee`
+7. **Data Persistence** → All user and employee data is stored in SQLite database
+8. **Logout** → Users can log out to end their session
+
+
 
 ## Features
 
-- ✅ Add new users with name and email
-- ✅ View all registered users in a table
-- ✅ Clean and responsive UI
-- ✅ SQLite database for persistent storage
-- ✅ Logout functionality
+- ✅ User Registration and Account Creation
+- ✅ Secure Login with Password Hashing (PBKDF2:SHA256)
+- ✅ Session Management for Authenticated Users
+- ✅ Add New Employees with Name, Email, and Department
+- ✅ View All Employees in a Table
+- ✅ Edit Employee Information
+- ✅ Delete Employees
+- ✅ User Logout Functionality
+- ✅ Clean and Responsive UI
+- ✅ SQLite Database for Persistent Storage
 
 ## How to Run
 
@@ -56,17 +72,29 @@ User-Management-Web-App/
    cd User-Management-Web-App
    ```
 
-2. **Install dependencies**
+2. **Create and activate a virtual environment (optional but recommended)**
    ```bash
-   pip install flask
+   python -m venv .venv
+   .venv\Scripts\activate   # On Windows
+   source .venv/bin/activate  # On macOS/Linux
    ```
 
-3. **Run the application**
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Run the application**
    ```bash
    python app.py
    ```
 
-4. **Open in browser**
+5. **Open in browser**
    ```
    http://127.0.0.1:5000/
    ```
+
+6. **Create an Account and Login**
+   - Visit http://127.0.0.1:5000/register to create a new account
+   - Log in with your credentials at http://127.0.0.1:5000/login
+   - Start managing employees!
