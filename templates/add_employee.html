@@ -64,6 +64,9 @@
 <body>
     <div class="container">
         <h1>Add New Employee</h1>
+        {% if error %}
+            <p style="color: #b91c1c; text-align: center; margin-bottom: 15px;">{{ error }}</p>
+        {% endif %}
         <form method="POST">
             <div class="form-group">
                 <label for="name">Name:</label>

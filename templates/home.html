@@ -20,16 +20,32 @@
                     <li class="nav-item">
                         <a class="nav-link active text-white" aria-current="page" href="{{url_for('home')}}">Home</a>
                     </li>
+                    {% if session_user %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{{url_for('employee')}}">Employees</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{{url_for('logout')}}">Logout</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
     <div class="container d-flex justify-content-center align-items-center flex-grow-1">
-        <div class="card shadow p-5 text-center" style="width: 400px;">
-            <h2 class="mb-4">Welcome</h2>
-            <a href="{{url_for('login')}}" class="btn btn-primary mb-3 w-100">Login</a>
-            <a href="{{url_for('register')}}" class="btn btn-success w-100">Register</a>
+        <div class="card shadow p-5 text-center" style="width: 440px;">
+            <h2 class="mb-3">Welcome</h2>
+            <p class="text-muted">Employee Management System</p>
+
+            {% if session_user %}
+                <p class="mb-3">Logged in as <strong>{{ session_user }}</strong></p>
+                <a href="{{url_for('employee')}}" class="btn btn-primary mb-2 w-100">View Employees</a>
+                <a href="{{url_for('logout')}}" class="btn btn-outline-danger w-100">Logout</a>
+            {% else %}
+                <a href="{{url_for('login')}}" class="btn btn-primary mb-3 w-100">Login</a>
+                <a href="{{url_for('register')}}" class="btn btn-success w-100">Register</a>
+            {% endif %}
         </div>
     </div>
 </body>

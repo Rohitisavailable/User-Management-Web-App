@@ -29,9 +29,13 @@
         <div class="container d-flex justify-content-center align-items-center flex-grow-1">
             <div class="card shadow p-5 text-center" style="width: 400px;">
                 <h2 class="mb-4">Login</h2>
+                {% if error %}
+                    <div class="alert alert-danger py-2">{{ error }}</div>
+                {% endif %}
                 <input class="form-control mb-3" name="username" placeholder="Username" required>
                 <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
                 <button type="submit" class="btn btn-success w-100">Login</button>
+                <p class="text-muted small mt-3 mb-0">Demo admin account: <strong>admin</strong> / <strong>admin123</strong></p>
             </div>
         </div>
     </form>

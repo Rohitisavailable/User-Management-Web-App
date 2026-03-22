@@ -1,5 +1,26 @@
 # User-Management-Web-App
 
+## Task 4 Updates Included
+
+Task 4 features are now merged into the main app.
+
+- Added role-based access control (admin/user)
+- Added admin dashboard route and UI
+- Added session-based role storage
+- Added REST API endpoints with JSON validation
+- Added API docs page in the web UI
+
+Run the app from the project root:
+
+```bash
+python app.py
+```
+
+Default seeded admin account:
+
+- Username: admin
+- Password: admin123
+
 A secure web application for managing employees built with Flask and SQLite.
 
 ## Description
@@ -24,7 +45,7 @@ This is an Employee Management System with user authentication that allows you t
 User-Management-Web-App/
 ├── README.md
 ├── app.py                  # Main Flask application
-├── database.db             # SQLite database file
+├── database.db             # SQLite database file (auto-created at runtime)
 ├── requirements.txt        # Python dependencies
 ├── static/
 │   └── style.css           # CSS styles
@@ -32,10 +53,12 @@ User-Management-Web-App/
     ├── home.html           # Homepage
     ├── register.html       # User registration page
     ├── login.html          # User login page
-    ├── employee.html       # Employee list page
+   ├── employee.html       # Employee list page
+   ├── admin_dashboard.html# Admin dashboard page
+   ├── api_docs.html       # API documentation page
     ├── add_employee.html   # Add employee form
     ├── edit_employee.html  # Edit employee form
-    └── dashboard.html      # Dashboard (optional)
+   └── ...                 # Additional templates as needed
 ```
 
 ## Project Flow
