@@ -67,9 +67,9 @@ All API endpoints require session authentication (login first).
 
 
 ## Security Flow
-
-```
 flowchart TD
+```
+
     A[User Request] --> B{Session Token Present?}
 
     B -- No --> C[Redirect to /login]
