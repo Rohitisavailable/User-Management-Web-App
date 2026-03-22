@@ -1,91 +1,144 @@
 # User-Management-Web-App
 
-## Task 4 Updates Included
-
-Task 4 features are now merged into the main app.
-
-- Added role-based access control (admin/user)
-- Added admin dashboard route and UI
-- Added session-based role storage
-- Added REST API endpoints with JSON validation
-- Added API docs page in the web UI
-
-Run the app from the project root:
-
-```bash
-python app.py
-```
-
-Default seeded admin account:
-
-- Username: admin
-- Password: admin123
-
-A secure web application for managing employees built with Flask and SQLite.
+A secure Flask-based employee management system with role-based access control, session authentication, and RESTful API endpoints.
 
 ## Description
 
-This is an Employee Management System with user authentication that allows you to register an account, log in securely, and manage employee information. The application provides a secure interface with password hashing for managing employee data including names, email addresses, and departments.
+This application provides a complete employee management system with two distinct user roles (admin and regular user). Users can register, authenticate, and manage employee records based on their assigned role. The system enforces role-based access at both the web UI and API levels, ensuring data security and proper authorization.
 
 ## Tech Stack
 
 | Technology | Purpose |
 |------------|---------|
-| **Python** | Backend programming language |
-| **Flask** | Web framework for building the application |
-| **Werkzeug** | Security utilities for password hashing and verification |
-| **SQLite** | Lightweight database for storing user and employee data |
-| **Jinja2** | Template engine for rendering HTML pages |
-| **HTML5** | Frontend markup structure |
-| **CSS3** | Styling and layout |
+| **Python 3.13** | Backend programming language |
+| **Flask** | Lightweight WSGI web framework |
+| **Werkzeug** | Provides password hashing and verification utilities |
+| **SQLite** | Lightweight relational database |
+| **Jinja2** | Template engine for dynamic HTML rendering |
+| **HTML5 + CSS3** | Frontend structure and styling |
+| **Bootstrap 5** | Responsive UI framework |
+
+## Role-Based Access Control (RBAC)
+
+The application implements role-based authorization with two roles:
+
+### Admin Role
+- ✅ Full CRUD operations on employees (Create, Read, Update, Delete)
+- ✅ Access to admin dashboard to view all users and statistics
+- ✅ Full REST API write access (POST, PUT, DELETE)
+- ✅ Seeded admin account: **username: `admin`**, **password: `admin123`**
+
+### User Role (Default)
+- ✅ View-only access to employee list
+- ✅ No ability to add, edit, or delete employees
+- ✅ Read-only REST API access (GET)
+- ✅ Access to API documentation
+
+### Access Control Flow
+```
+User Registration → Assign Role (admin/user)
+                 ↓
+User Login → Set Session with Role
+         ↓
+Route Handler → Check Role Decorator
+             ↓ (admin_required / login_required)
+             ↓
+Access Granted / Access Denied → Redirect
+```
+
+## REST API Endpoints
+
+All API endpoints require session authentication (login first).
+
+### Authentication Endpoints
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/api/login` | Login and create session | ❌ No |
+| `POST` | `/api/logout` | Logout and clear session | ✅ Yes |
+
+### Employee Endpoints
+| Method | Endpoint | Description | Role Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/api/employees` | List all employees | User/Admin (read-only) |
+| `POST` | `/api/employees` | Create new employee | Admin only |
+| `GET` | `/api/employees/<id>` | Get single employee | User/Admin (read-only) |
+| `PUT` | `/api/employees/<id>` | Update employee | Admin only |
+| `DELETE` | `/api/employees/<id>` | Delete employee | Admin only |
+
+
+## Security Flow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     User Request                             │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+        ┌──────────────────────────┐
+        │   Check Session Token    │
+        └────┬─────────────────────┘
+             │
+        No Auth Redirect to /login
+             │
+             ▼
+    ┌────────────────────┐
+    │  Session Valid?    │
+    └────┬────────────┬──┘
+         │ Yes        │ No
+         │            └─► Unauthorized (401)
+         ▼
+    ┌──────────────────┐
+    │ Check User Role  │
+    └────┬──────┬─────┘
+         │      │
+      Admin   User
+         │      │
+         ▼      ▼
+    ┌────────────────────────┐
+    │ Route Protection Check │
+    └────┬──────────────────┬┘
+         │                  │
+    Admin_Required       Login_Required
+         │                  │
+         ▼                  ▼
+    ┌─────────────────────────────────┐
+    │  Process Request & Return Data  │
+    └─────────────────────────────────┘
+```
 
 ## Project Structure
 
 ```
 User-Management-Web-App/
-├── README.md
-├── app.py                  # Main Flask application
-├── database.db             # SQLite database file (auto-created at runtime)
-├── requirements.txt        # Python dependencies
+├── README.md                   # Project documentation
+├── app.py                      # Main Flask application
+├── database.db                 # SQLite database (auto-created)
+├── requirements.txt            # Python dependencies
 ├── static/
-│   └── style.css           # CSS styles
+│   └── style.css              # CSS styling
 └── templates/
-    ├── home.html           # Homepage
-    ├── register.html       # User registration page
-    ├── login.html          # User login page
-   ├── employee.html       # Employee list page
-   ├── admin_dashboard.html# Admin dashboard page
-   ├── api_docs.html       # API documentation page
-    ├── add_employee.html   # Add employee form
-    ├── edit_employee.html  # Edit employee form
-   └── ...                 # Additional templates as needed
+    ├── home.html              # Welcome page
+    ├── register.html          # User registration
+    ├── login.html             # User login
+    ├── employee.html          # Employee list (with role checks)
+    ├── add_employee.html      # Add employee form (admin only)
+    ├── edit_employee.html     # Edit employee form (admin only)
+    ├── admin_dashboard.html   # Admin statistics and user list
+    └── api_docs.html          # API documentation
 ```
-
-## Project Flow
-
-1. **User Access** → User navigates to the homepage (`/`)
-2. **User Registration** → New users can register an account at `/register`
-3. **Password Hashing** → Passwords are securely hashed using PBKDF2:SHA256
-4. **User Login** → Registered users log in at `/login` with credentials verification
-5. **Session Management** → Authenticated users are granted a session
-6. **Employee Management** → Users can add, view, edit, and delete employees at `/employee`
-7. **Data Persistence** → All user and employee data is stored in SQLite database
-8. **Logout** → Users can log out to end their session
-
-
 
 ## Features
 
-- ✅ User Registration and Account Creation
-- ✅ Secure Login with Password Hashing (PBKDF2:SHA256)
-- ✅ Session Management for Authenticated Users
-- ✅ Add New Employees with Name, Email, and Department
-- ✅ View All Employees in a Table
-- ✅ Edit Employee Information
-- ✅ Delete Employees
-- ✅ User Logout Functionality
-- ✅ Clean and Responsive UI
-- ✅ SQLite Database for Persistent Storage
+- ✅ User registration with role assignment
+- ✅ Secure login with PBKDF2:SHA256 password hashing
+- ✅ Session-based authentication and authorization
+- ✅ Role-based access control (admin/user)
+- ✅ Employee CRUD operations (restricted by role)
+- ✅ Admin dashboard with statistics
+- ✅ RESTful API with JSON responses
+- ✅ Input validation and error handling
+- ✅ Responsive Bootstrap UI
+- ✅ SQLite persistent storage
 
 ## How to Run
 
@@ -117,7 +170,22 @@ User-Management-Web-App/
    http://127.0.0.1:5000/
    ```
 
-6. **Create an Account and Login**
-   - Visit http://127.0.0.1:5000/register to create a new account
-   - Log in with your credentials at http://127.0.0.1:5000/login
-   - Start managing employees!
+## Default Admin Account
+
+The application comes pre-seeded with an admin account:
+- **Username:** `admin`
+- **Password:** `admin123`
+
+Use this to log in and explore admin features like the admin dashboard and employee management.
+
+## API Testing
+
+Access API documentation at:
+```
+http://127.0.0.1:5000/api/docs
+```
+
+Example workflow:
+1. Register a new user at `/register`
+2. Login at `/api/login` with JSON credentials
+3. Make API requests to `/api/employees`
