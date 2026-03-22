@@ -35,15 +35,27 @@ The application implements role-based authorization with two roles:
 - ✅ Access to API documentation
 
 ### Access Control Flow
-```
-User Registration → Assign Role (admin/user)
-                 ↓
-User Login → Set Session with Role
-         ↓
-Route Handler → Check Role Decorator
-             ↓ (admin_required / login_required)
-             ↓
-Access Granted / Access Denied → Redirect
+```mermaid
+flowchart TD
+    A[User Registration] --> B[Assign Role (Admin / User)]
+
+    B --> C[User Login]
+    C --> D[Create Session with Role]
+
+    D --> E[Request Route Handler]
+    E --> F{Check Route Decorator}
+
+    F -- admin_required --> G{Is Admin?}
+    F -- login_required --> H{Is Logged In?}
+
+    G -- Yes --> I[Access Granted]
+    G -- No --> J[Access Denied → Redirect / Unauthorized]
+
+    H -- Yes --> I
+    H -- No --> J
+
+    I --> K[Execute Controller Logic]
+    K --> L[Return Response]
 ```
 
 ## REST API Endpoints
