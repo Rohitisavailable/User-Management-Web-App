@@ -29,9 +29,17 @@
         <div class="container d-flex justify-content-center align-items-center flex-grow-1">
             <div class="card shadow p-5 text-center" style="width: 400px;">
                 <h2 class="mb-4">Register</h2>
+                {% if error %}
+                    <div class="alert alert-danger py-2">{{ error }}</div>
+                {% endif %}
                 <input type="text" name="username" placeholder="Username" class="form-control mb-3" required>
                 <input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
+                <select name="role" class="form-select mb-3" required>
+                    <option value="user" selected>User</option>
+                    <option value="admin">Admin</option>
+                </select>
                 <button type="submit" class="btn btn-success w-100">Create Account</button>
+                <p class="text-muted small mt-3 mb-0">Admin users can access admin dashboard and write API endpoints.</p>
             </div>
         </div>
     </form>

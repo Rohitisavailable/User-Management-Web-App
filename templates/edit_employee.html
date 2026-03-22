@@ -77,6 +77,9 @@
 <body>
     <div class="container">
         <h1>Edit Employee</h1>
+        {% if error %}
+            <p style="color: #b91c1c; margin-bottom: 10px;">{{ error }}</p>
+        {% endif %}
         <form method="POST">
             <div class="form-group">
                 <label for="name">Name:</label>
@@ -92,7 +95,7 @@
             </div>
             <div class="button-group">
                 <button type="submit" class="btn-submit">Update</button>
-                <a href="/employee"><button type="button" class="btn-cancel">Cancel</button></a>
+                <a href="{{ url_for('employee') }}"><button type="button" class="btn-cancel">Cancel</button></a>
             </div>
         </form>
     </div>

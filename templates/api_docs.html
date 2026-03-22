@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Docs</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg bg-gradient" style="background: linear-gradient(90deg, #db7093, #c71585) !important;">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold text-white" href="{{ url_for('home') }}">User Management</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{{ url_for('employee') }}">Employees</a>
+                    </li>
+                    {% if session_role == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{{ url_for('admin_dashboard') }}">Admin</a>
+                    </li>
+                    {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h2 class="mb-3">Task 4 API Endpoints</h2>
+        <p class="text-muted">Session-authenticated REST endpoints for employee CRUD.</p>
+
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body">
+                <h5>Authentication</h5>
+                <ul>
+                    <li><strong>POST /api/login</strong> - login with JSON body: username, password</li>
+                    <li><strong>POST /api/logout</strong> - clear current session</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 mb-3">
+            <div class="card-body">
+                <h5>Employees</h5>
+                <ul>
+                    <li><strong>GET /api/employees</strong> - list employees (user/admin)</li>
+                    <li><strong>POST /api/employees</strong> - create employee (admin only)</li>
+                    <li><strong>GET /api/employees/&lt;id&gt;</strong> - get one employee (user/admin)</li>
+                    <li><strong>PUT /api/employees/&lt;id&gt;</strong> - update employee (admin only)</li>
+                    <li><strong>DELETE /api/employees/&lt;id&gt;</strong> - delete employee (admin only)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+            <div class="card-body">
+                <h5>Sample JSON for create/update</h5>
+                <pre class="bg-dark text-white p-3 rounded mb-0">{
+  "name": "Alex Doe",
+  "email": "alex@example.com",
+  "dept": "Engineering"
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
