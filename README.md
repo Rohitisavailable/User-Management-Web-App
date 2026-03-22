@@ -37,25 +37,25 @@ The application implements role-based authorization with two roles:
 ### Access Control Flow
 ```mermaid
 flowchart TD
-    A[User Registration] --> B[Assign Role (Admin / User)]
+    A[User Registration] --> B[Assign Role - Admin or User]
 
     B --> C[User Login]
-    C --> D[Create Session with Role]
+    C --> D[Create Session With Role]
 
-    D --> E[Request Route Handler]
-    E --> F{Check Route Decorator}
+    D --> E[Route Request]
+    E --> F{Check Access Rule}
 
-    F -- admin_required --> G{Is Admin?}
-    F -- login_required --> H{Is Logged In?}
+    F -->|Admin Required| G{User Is Admin}
+    F -->|Login Required| H{User Logged In}
 
-    G -- Yes --> I[Access Granted]
-    G -- No --> J[Access Denied → Redirect / Unauthorized]
+    G -->|Yes| I[Access Granted]
+    G -->|No| J[Access Denied]
 
-    H -- Yes --> I
-    H -- No --> J
+    H -->|Yes| I
+    H -->|No| K[Redirect To Login]
 
-    I --> K[Execute Controller Logic]
-    K --> L[Return Response]
+    I --> L[Execute Business Logic]
+    L --> M[Return Response]
 ```
 
 ## REST API Endpoints
