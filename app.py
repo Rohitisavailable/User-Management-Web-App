@@ -1,13 +1,31 @@
 import os
 import re
+import secrets
 import sqlite3
+from datetime import timedelta
 from functools import wraps
 
 from flask import Flask, jsonify, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
-app.secret_key = "secure-secret-key"
+app.config.update(
+    SECRET_KEY=(
+        os.environ.get("FLASK_SECRET_KEY")
+        or os.environ.get("SECRET_KEY")
+        or secrets.token_hex(32)
+    ),
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_SECURE=(
+        os.environ.get("SESSION_COOKIE_SECURE", "0") == "1"
+        or os.environ.get("FLASK_ENV") == "production"
+    ),
+    PERMANENT_SESSION_LIFETIME=timedelta(hours=8),
+)
+
+CSRF_SESSION_KEY = "_csrf_token"
+CSRF_HEADER_NAME = "X-CSRF-Token"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATABASE_PATH = os.path.join(BASE_DIR, "database.db")
@@ -61,8 +79,15 @@ def init_db():
             ("admin",)
         ).fetchone()
         if not admin_exists:
+            default_admin_password = os.environ.get("DEFAULT_ADMIN_PASSWORD", "").strip()
+            if not default_admin_password:
+                app.logger.warning(
+                    "DEFAULT_ADMIN_PASSWORD is not set; skipping automatic admin user creation."
+                )
+                return
+
             admin_password_hash = generate_password_hash(
-                "admin123",
+                default_admin_password,
                 method="pbkdf2:sha256",
                 salt_length=16
             )
@@ -83,6 +108,56 @@ def is_password_hash(password_value):
 
 def normalize_role(role_value):
     return "admin" if role_value == "admin" else "user"
+
+
+def get_or_create_csrf_token():
+    csrf_token = session.get(CSRF_SESSION_KEY)
+    if not csrf_token:
+        csrf_token = secrets.token_urlsafe(32)
+        session[CSRF_SESSION_KEY] = csrf_token
+    return csrf_token
+
+
+@app.context_processor
+def inject_csrf_token():
+    return {"csrf_token": get_or_create_csrf_token()}
+
+
+@app.before_request
+def verify_csrf_token_for_unsafe_methods():
+    if request.method in {"GET", "HEAD", "OPTIONS", "TRACE"}:
+        return None
+
+    if request.endpoint == "static":
+        return None
+
+    if request.endpoint in {"api_login"}:
+        return None
+
+    expected_token = session.get(CSRF_SESSION_KEY)
+    if request.path.startswith("/api/"):
+        provided_token = request.headers.get(CSRF_HEADER_NAME, "")
+    else:
+        provided_token = request.form.get("csrf_token", "")
+
+    if (
+        not expected_token
+        or not provided_token
+        or not secrets.compare_digest(str(provided_token), str(expected_token))
+    ):
+        if request.path.startswith("/api/"):
+            return jsonify({"error": "CSRF validation failed."}), 400
+        return "CSRF validation failed.", 400
+
+    return None
+
+
+@app.after_request
+def apply_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 def employee_row_to_dict(employee_row):
     return {
@@ -158,7 +233,7 @@ def register():
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         raw_password = request.form.get('password', '').strip()
-        role = normalize_role(request.form.get('role', 'user'))
+        role = 'user'
 
         if not username or not raw_password:
             return render_template('register.html', error='Username and password are required.')
@@ -256,9 +331,13 @@ def login():
             and is_password_hash(user['password'])
             and check_password_hash(user['password'], submitted_password)
         ):
+            # Prevent session fixation by regenerating session state on login.
+            session.clear()
+            session.permanent = True
             session['user_id'] = user['id']
             session['user'] = user['username']
             session['role'] = normalize_role(user['role'])
+            get_or_create_csrf_token()
 
             if session['role'] == 'admin':
                 return redirect(url_for('admin_dashboard'))
@@ -369,9 +448,12 @@ def api_login():
     ):
         return jsonify({"error": "Invalid credentials."}), 401
 
+    session.clear()
+    session.permanent = True
     session['user_id'] = user['id']
     session['user'] = user['username']
     session['role'] = normalize_role(user['role'])
+    csrf_token = get_or_create_csrf_token()
 
     return jsonify(
         {
@@ -380,13 +462,18 @@ def api_login():
                 "id": user['id'],
                 "username": user['username'],
                 "role": normalize_role(user['role'])
-            }
+            },
+            "csrf_token": csrf_token
         }
     ), 200
 
 
 @app.route('/api/logout', methods=['POST'])
 def api_logout():
+    auth_error = api_login_required()
+    if auth_error:
+        return auth_error
+
     session.clear()
     return jsonify({"message": "Logout successful."}), 200
 
@@ -518,7 +605,8 @@ def api_employee_detail(employee_id):
     return jsonify({"message": "Employee deleted."}), 200
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['POST'])
+@login_required
 def logout():
     session.clear()
     return redirect('/')
@@ -528,4 +616,4 @@ init_db()
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=os.environ.get("FLASK_DEBUG", "0") == "1")

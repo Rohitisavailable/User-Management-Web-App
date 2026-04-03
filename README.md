@@ -26,7 +26,7 @@ The application implements role-based authorization with two roles:
 - ✅ Full CRUD operations on employees (Create, Read, Update, Delete)
 - ✅ Access to admin dashboard to view all users and statistics
 - ✅ Full REST API write access (POST, PUT, DELETE)
-- ✅ Seeded admin account: **username: `admin`**, **password: `admin123`**
+- ✅ Optional seeded admin account via environment variable
 
 ### User Role (Default)
 - ✅ View-only access to employee list
@@ -69,6 +69,21 @@ All API endpoints require session authentication (login first).
 ## Security Flow
 
 ```
+
+## Security Configuration
+
+Set these environment variables before first run:
+
+- `FLASK_SECRET_KEY` (or `SECRET_KEY`): required for stable, secure session signing.
+- `DEFAULT_ADMIN_PASSWORD`: optional. If set and no admin exists, an admin user (`admin`) is created.
+- `SESSION_COOKIE_SECURE=1`: recommended in HTTPS environments.
+
+Additional protections enabled in the app:
+
+- CSRF validation for all unsafe web methods (`POST`, `PUT`, `DELETE`, `PATCH`).
+- CSRF validation for unsafe API methods using header `X-CSRF-Token`.
+- Session cookie hardening (`HttpOnly`, `SameSite=Lax`, optional `Secure`).
+- Session fixation mitigation (session reset on login).
 ┌─────────────────────────────────────────────────────────────┐
 │                     User Request                             │
 └──────────────────────┬──────────────────────────────────────┘
@@ -170,13 +185,15 @@ User-Management-Web-App/
    http://127.0.0.1:5000/
    ```
 
-## Default Admin Account
+## Admin Bootstrap
 
-The application comes pre-seeded with an admin account:
-- **Username:** `admin`
-- **Password:** `admin123`
+To auto-create an admin user on first run:
 
-Use this to log in and explore admin features like the admin dashboard and employee management.
+1. Set `DEFAULT_ADMIN_PASSWORD` in your environment.
+2. Start the app.
+3. Login with username `admin` and your configured password.
+
+If `DEFAULT_ADMIN_PASSWORD` is not set, automatic admin creation is skipped for security.
 
 ## API Testing
 
@@ -188,4 +205,6 @@ http://127.0.0.1:5000/api/docs
 Example workflow:
 1. Register a new user at `/register`
 2. Login at `/api/login` with JSON credentials
-3. Make API requests to `/api/employees`
+3. Copy `csrf_token` from the login response
+4. Include header `X-CSRF-Token: <csrf_token>` for API writes (`POST`, `PUT`, `DELETE`)
+5. Make API requests to `/api/employees`

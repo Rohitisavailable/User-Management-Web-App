@@ -25,7 +25,10 @@
                         <a class="nav-link text-white" href="{{url_for('employee')}}">Employees</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{url_for('logout')}}">Logout</a>
+                        <form method="post" action="{{ url_for('logout') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn nav-link text-white border-0 bg-transparent p-0">Logout</button>
+                        </form>
                     </li>
                     {% endif %}
                 </ul>
@@ -41,7 +44,10 @@
             {% if session_user %}
                 <p class="mb-3">Logged in as <strong>{{ session_user }}</strong></p>
                 <a href="{{url_for('employee')}}" class="btn btn-primary mb-2 w-100">View Employees</a>
-                <a href="{{url_for('logout')}}" class="btn btn-outline-danger w-100">Logout</a>
+                <form method="post" action="{{ url_for('logout') }}" class="w-100">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <button type="submit" class="btn btn-outline-danger w-100">Logout</button>
+                </form>
             {% else %}
                 <a href="{{url_for('login')}}" class="btn btn-primary mb-3 w-100">Login</a>
                 <a href="{{url_for('register')}}" class="btn btn-success w-100">Register</a>

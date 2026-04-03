@@ -22,7 +22,10 @@
                         <a class="nav-link text-white" href="{{ url_for('api_docs') }}">API Docs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                        <form method="post" action="{{ url_for('logout') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn nav-link text-white border-0 bg-transparent p-0">Logout</button>
+                        </form>
                     </li>
                 </ul>
             </div>

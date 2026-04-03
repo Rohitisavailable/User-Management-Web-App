@@ -32,14 +32,11 @@
                 {% if error %}
                     <div class="alert alert-danger py-2">{{ error }}</div>
                 {% endif %}
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                 <input type="text" name="username" placeholder="Username" class="form-control mb-3" required>
                 <input type="password" name="password" placeholder="Password" class="form-control mb-3" required>
-                <select name="role" class="form-select mb-3" required>
-                    <option value="user" selected>User</option>
-                    <option value="admin">Admin</option>
-                </select>
                 <button type="submit" class="btn btn-success w-100">Create Account</button>
-                <p class="text-muted small mt-3 mb-0">Admin users can access admin dashboard and write API endpoints.</p>
+                <p class="text-muted small mt-3 mb-0">New accounts are created with user-level access.</p>
             </div>
         </div>
     </form>
