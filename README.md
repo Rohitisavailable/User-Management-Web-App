@@ -35,15 +35,27 @@ The application implements role-based authorization with two roles:
 - ✅ Access to API documentation
 
 ### Access Control Flow
-```
-User Registration → Assign Role (admin/user)
-                 ↓
-User Login → Set Session with Role
-         ↓
-Route Handler → Check Role Decorator
-             ↓ (admin_required / login_required)
-             ↓
-Access Granted / Access Denied → Redirect
+```mermaid
+flowchart TD
+    A[User Registration] --> B[Assign Role - Admin or User]
+
+    B --> C[User Login]
+    C --> D[Create Session With Role]
+
+    D --> E[Route Request]
+    E --> F{Check Access Rule}
+
+    F -->|Admin Required| G{User Is Admin}
+    F -->|Login Required| H{User Logged In}
+
+    G -->|Yes| I[Access Granted]
+    G -->|No| J[Access Denied]
+
+    H -->|Yes| I
+    H -->|No| K[Redirect To Login]
+
+    I --> L[Execute Business Logic]
+    L --> M[Return Response]
 ```
 
 ## REST API Endpoints
@@ -68,6 +80,27 @@ All API endpoints require session authentication (login first).
 
 ## Security Flow
 
+```mermaid
+flowchart TD
+    A[User Request] --> B{Session Token Present?}
+
+    B -- No --> C[Redirect to /login]
+    B -- Yes --> D{Session Valid?}
+
+    D -- No --> E[Return 401 Unauthorized]
+    D -- Yes --> F{Check User Role}
+
+    F -- Admin --> G{Admin Route Required?}
+    F -- User --> H{Login Required Route?}
+
+    G -- Yes --> I[Allow Access]
+    G -- No --> J[Return 403 Forbidden]
+
+    H -- Yes --> I
+    H -- No --> J
+
+    I --> K[Process Request]
+    K --> L[Return Response/Data]
 ```
 
 ## Security Configuration
@@ -84,42 +117,6 @@ Additional protections enabled in the app:
 - CSRF validation for unsafe API methods using header `X-CSRF-Token`.
 - Session cookie hardening (`HttpOnly`, `SameSite=Lax`, optional `Secure`).
 - Session fixation mitigation (session reset on login).
-┌─────────────────────────────────────────────────────────────┐
-│                     User Request                             │
-└──────────────────────┬──────────────────────────────────────┘
-                       │
-                       ▼
-        ┌──────────────────────────┐
-        │   Check Session Token    │
-        └────┬─────────────────────┘
-             │
-        No Auth Redirect to /login
-             │
-             ▼
-    ┌────────────────────┐
-    │  Session Valid?    │
-    └────┬────────────┬──┘
-         │ Yes        │ No
-         │            └─► Unauthorized (401)
-         ▼
-    ┌──────────────────┐
-    │ Check User Role  │
-    └────┬──────┬─────┘
-         │      │
-      Admin   User
-         │      │
-         ▼      ▼
-    ┌────────────────────────┐
-    │ Route Protection Check │
-    └────┬──────────────────┬┘
-         │                  │
-    Admin_Required       Login_Required
-         │                  │
-         ▼                  ▼
-    ┌─────────────────────────────────┐
-    │  Process Request & Return Data  │
-    └─────────────────────────────────┘
-```
 
 ## Project Structure
 
@@ -208,3 +205,4 @@ Example workflow:
 3. Copy `csrf_token` from the login response
 4. Include header `X-CSRF-Token: <csrf_token>` for API writes (`POST`, `PUT`, `DELETE`)
 5. Make API requests to `/api/employees`
+
