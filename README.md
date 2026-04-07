@@ -26,7 +26,7 @@ The application implements role-based authorization with two roles:
 - ✅ Full CRUD operations on employees (Create, Read, Update, Delete)
 - ✅ Access to admin dashboard to view all users and statistics
 - ✅ Full REST API write access (POST, PUT, DELETE)
-- ✅ Seeded admin account: **username: `admin`**, **password: `admin123`**
+- ✅ Optional seeded admin account via environment variable
 
 ### User Role (Default)
 - ✅ View-only access to employee list
@@ -80,27 +80,42 @@ All API endpoints require session authentication (login first).
 
 ## Security Flow
 
-```mermaid
-flowchart TD
-    A[User Request] --> B{Session Token Present?}
-
-    B -- No --> C[Redirect to /login]
-    B -- Yes --> D{Session Valid?}
-
-    D -- No --> E[Return 401 Unauthorized]
-    D -- Yes --> F{Check User Role}
-
-    F -- Admin --> G{Admin Route Required?}
-    F -- User --> H{Login Required Route?}
-
-    G -- Yes --> I[Allow Access]
-    G -- No --> J[Return 403 Forbidden]
-
-    H -- Yes --> I
-    H -- No --> J
-
-    I --> K[Process Request]
-    K --> L[Return Response/Data]
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     User Request                             │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+        ┌──────────────────────────┐
+        │   Check Session Token    │
+        └────┬─────────────────────┘
+             │
+        No Auth Redirect to /login
+             │
+             ▼
+    ┌────────────────────┐
+    │  Session Valid?    │
+    └────┬────────────┬──┘
+         │ Yes        │ No
+         │            └─► Unauthorized (401)
+         ▼
+    ┌──────────────────┐
+    │ Check User Role  │
+    └────┬──────┬─────┘
+         │      │
+      Admin   User
+         │      │
+         ▼      ▼
+    ┌────────────────────────┐
+    │ Route Protection Check │
+    └────┬──────────────────┬┘
+         │                  │
+    Admin_Required       Login_Required
+         │                  │
+         ▼                  ▼
+    ┌─────────────────────────────────┐
+    │  Process Request & Return Data  │
+    └─────────────────────────────────┘
 ```
 
 ## Project Structure
@@ -167,13 +182,15 @@ User-Management-Web-App/
    http://127.0.0.1:5000/
    ```
 
-## Default Admin Account
+## Admin Bootstrap
 
-The application comes pre-seeded with an admin account:
-- **Username:** `admin`
-- **Password:** `admin123`
+To auto-create an admin user on first run:
 
-Use this to log in and explore admin features like the admin dashboard and employee management.
+1. Set `DEFAULT_ADMIN_PASSWORD` in your environment.
+2. Start the app.
+3. Login with username `admin` and your configured password.
+
+If `DEFAULT_ADMIN_PASSWORD` is not set, automatic admin creation is skipped for security.
 
 ## API Testing
 

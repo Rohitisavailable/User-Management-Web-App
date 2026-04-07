@@ -29,7 +29,10 @@
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                        <form method="post" action="{{ url_for('logout') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn nav-link text-white border-0 bg-transparent p-0">Logout</button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -75,6 +78,7 @@
                                         {% if session_role == 'admin' %}
                                             <a href="{{ url_for('edit_employee', id=s['id']) }}" class="btn btn-sm btn-primary">Edit</a>
                                             <form action="{{ url_for('delete_employee', id=s['id']) }}" method="post" class="d-inline">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                             </form>
                                         {% else %}

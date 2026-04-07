@@ -24,7 +24,10 @@
                     </li>
                     {% endif %}
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="{{ url_for('logout') }}">Logout</a>
+                        <form method="post" action="{{ url_for('logout') }}" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <button type="submit" class="btn nav-link text-white border-0 bg-transparent p-0">Logout</button>
+                        </form>
                     </li>
                 </ul>
             </div>
@@ -34,6 +37,7 @@
     <div class="container py-4">
         <h2 class="mb-3">API Endpoints</h2>
         <p class="text-muted">Session-authenticated REST endpoints for employee CRUD.</p>
+        <p class="text-muted mb-4">For all state-changing API requests (POST, PUT, DELETE), send header <code>X-CSRF-Token</code> with the token returned by <code>POST /api/login</code>.</p>
 
         <div class="card shadow-sm border-0 mb-3">
             <div class="card-body">
