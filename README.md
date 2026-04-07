@@ -80,43 +80,43 @@ All API endpoints require session authentication (login first).
 
 ## Security Flow
 
-```mermaid
-flowchart TD
-    A[User Request] --> B{Session Token Present?}
-
-    B -- No --> C[Redirect to /login]
-    B -- Yes --> D{Session Valid?}
-
-    D -- No --> E[Return 401 Unauthorized]
-    D -- Yes --> F{Check User Role}
-
-    F -- Admin --> G{Admin Route Required?}
-    F -- User --> H{Login Required Route?}
-
-    G -- Yes --> I[Allow Access]
-    G -- No --> J[Return 403 Forbidden]
-
-    H -- Yes --> I
-    H -- No --> J
-
-    I --> K[Process Request]
-    K --> L[Return Response/Data]
 ```
-
-## Security Configuration
-
-Set these environment variables before first run:
-
-- `FLASK_SECRET_KEY` (or `SECRET_KEY`): required for stable, secure session signing.
-- `DEFAULT_ADMIN_PASSWORD`: optional. If set and no admin exists, an admin user (`admin`) is created.
-- `SESSION_COOKIE_SECURE=1`: recommended in HTTPS environments.
-
-Additional protections enabled in the app:
-
-- CSRF validation for all unsafe web methods (`POST`, `PUT`, `DELETE`, `PATCH`).
-- CSRF validation for unsafe API methods using header `X-CSRF-Token`.
-- Session cookie hardening (`HttpOnly`, `SameSite=Lax`, optional `Secure`).
-- Session fixation mitigation (session reset on login).
+┌─────────────────────────────────────────────────────────────┐
+│                     User Request                             │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       ▼
+        ┌──────────────────────────┐
+        │   Check Session Token    │
+        └────┬─────────────────────┘
+             │
+        No Auth Redirect to /login
+             │
+             ▼
+    ┌────────────────────┐
+    │  Session Valid?    │
+    └────┬────────────┬──┘
+         │ Yes        │ No
+         │            └─► Unauthorized (401)
+         ▼
+    ┌──────────────────┐
+    │ Check User Role  │
+    └────┬──────┬─────┘
+         │      │
+      Admin   User
+         │      │
+         ▼      ▼
+    ┌────────────────────────┐
+    │ Route Protection Check │
+    └────┬──────────────────┬┘
+         │                  │
+    Admin_Required       Login_Required
+         │                  │
+         ▼                  ▼
+    ┌─────────────────────────────────┐
+    │  Process Request & Return Data  │
+    └─────────────────────────────────┘
+```
 
 ## Project Structure
 
@@ -202,7 +202,4 @@ http://127.0.0.1:5000/api/docs
 Example workflow:
 1. Register a new user at `/register`
 2. Login at `/api/login` with JSON credentials
-3. Copy `csrf_token` from the login response
-4. Include header `X-CSRF-Token: <csrf_token>` for API writes (`POST`, `PUT`, `DELETE`)
-5. Make API requests to `/api/employees`
-
+3. Make API requests to `/api/employees`
